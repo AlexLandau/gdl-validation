@@ -1,0 +1,9 @@
+(sentence foo) (sentence bar)
+( sentence  baz )
+(<= rule1 conj1 conj2)
+(<=
+	rule2
+		conj3
+	conj4		(conj5
+term1 term2
+	term3) conj6)

@@ -1,0 +1,68 @@
+import java.util.LinkedList;
+import java.util.List;
+
+import net.alloyggp.griddle.grammar.Function;
+import net.alloyggp.griddle.grammar.Literal;
+import net.alloyggp.griddle.grammar.Rule;
+import net.alloyggp.griddle.grammar.Sentence;
+import net.alloyggp.griddle.grammar.Term;
+import net.alloyggp.griddle.grammar.TopLevelGdl;
+
+parser code {:
+
+:}
+
+terminal        IMPLIES, POPEN, PCLOSE, DISTINCT, OR, NOT;
+terminal String CONSTANT, VARIABLE;
+
+non terminal List<TopLevelGdl>     game;
+non terminal TopLevelGdl           toplevel;
+non terminal Rule                  rule;
+non terminal Sentence              sentence;
+non terminal List<Literal>         literallist;
+non terminal Literal               literal;
+non terminal List<Term>            termlist;
+non terminal Term                  term;
+non terminal Function              function;
+
+game  ::=  game:g toplevel:tl   {: g.add(tl); RESULT = g; :}
+    | /* empty list */          {: RESULT = new LinkedList<TopLevelGdl>(); :}
+    ;
+toplevel ::= rule:r             {: RESULT = TopLevelGdl.create(r, rxleft, rxright); :}
+    | sentence:s                {: RESULT = TopLevelGdl.create(s, sxleft, sxright); :}
+    | error:e PCLOSE:pr         {: RESULT = TopLevelGdl.createError(e, exleft, prxright); :}
+    ;
+rule ::= POPEN:pl IMPLIES sentence:s literallist:ls PCLOSE:pr {: RESULT = Rule.create(s, ls, plxleft, prxright); :}
+    ;
+sentence ::= CONSTANT:c     {: RESULT = Sentence.create(c, cxleft, cxright); :}
+    | POPEN:pl CONSTANT:c termlist:ts PCLOSE:pr {: RESULT = Sentence.create(c, cxleft, cxright, ts, plxleft, prxright); :}
+    ;
+literallist ::= literallist:ls literal:l {: ls.add(l); RESULT = ls; :}
+    | /* empty list */       {: RESULT = new LinkedList<Literal>(); :}
+    ;
+literal ::= sentence:s                            {: RESULT = Literal.createSentence(s, sxleft, sxright); :}
+    | POPEN:pl NOT literal:l PCLOSE:pr            {: RESULT = Literal.createNot(l, plxleft, prxright); :}
+    | POPEN:pl DISTINCT term:t1 term:t2 PCLOSE:pr {: RESULT = Literal.createDistinct(t1, t2, plxleft, prxright); :}
+    | POPEN:pl OR literallist:ls PCLOSE:pr        {: RESULT = Literal.createOr(ls, plxleft, prxright); :}
+    ;
+termlist ::= termlist:ts term:t   {: ts.add(t); RESULT = ts; :}
+    | /* empty list */            {: RESULT = new LinkedList<Term>(); :}
+    ;
+term ::= CONSTANT:c               {: RESULT = Term.createConstant(c, cxleft, cxright); :}
+    | VARIABLE:v                  {: RESULT = Term.createVariable(v, vxleft, vxright); :}
+    | function:f                  {: RESULT = Term.createFunction(f, fxleft, fxright); :}
+    /* The following only apply for error cases where one of these Datalog keywords is being
+       used out of place. */
+    | IMPLIES:i                   {: RESULT = Term.createConstant("<=",       ixleft, ixright); :}
+    | DISTINCT:d                  {: RESULT = Term.createConstant("distinct", dxleft, dxright); :}
+    | OR:o                        {: RESULT = Term.createConstant("or",       oxleft, oxright); :}
+    | NOT:n                       {: RESULT = Term.createConstant("not",      nxleft, nxright); :}
+    ;
+function ::= POPEN:pl CONSTANT:c termlist:ts PCLOSE:pr {: RESULT = Function.create(c, cxleft, cxright, ts, plxleft, prxright); :}
+    /* The following only apply for error cases where one of these Datalog keywords is being
+       used out of place. */
+    | POPEN:pl IMPLIES:c  termlist:ts PCLOSE:pr {: RESULT = Function.create("<=",       cxleft, cxright, ts, plxleft, prxright); :}
+    | POPEN:pl DISTINCT:c termlist:ts PCLOSE:pr {: RESULT = Function.create("distinct", cxleft, cxright, ts, plxleft, prxright); :}
+    | POPEN:pl OR:c       termlist:ts PCLOSE:pr {: RESULT = Function.create("or",       cxleft, cxright, ts, plxleft, prxright); :}
+    | POPEN:pl NOT:c      termlist:ts PCLOSE:pr {: RESULT = Function.create("not",      cxleft, cxright, ts, plxleft, prxright); :}
+    ;

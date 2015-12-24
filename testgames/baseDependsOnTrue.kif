@@ -1,0 +1,8 @@
+(<= (base bar) (true bar))
+(role you)
+(legal you foo)
+(<= (next bar)
+    (does you foo))
+(<= terminal
+    (true bar))
+(goal you 100)

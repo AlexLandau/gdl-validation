@@ -1,0 +1,10 @@
+(error is ?here)
+(error is notHere)
+(role you)
+(<= (legal you foo)
+    (error is notHere))
+(<= (next bar)
+    (does you foo))
+(<= terminal
+    (true bar))
+(goal you 100)

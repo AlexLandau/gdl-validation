@@ -38,12 +38,12 @@ uploadArchives {
         packaging 'jar'
         artifactId = "gdl-validation"
         description 'A library for parsing and validating games in the Game Description Language (GDL).'
-        url 'https://github.com/AlexLandau/griddle'
+        url 'https://github.com/AlexLandau/gdl-validation'
 
         scm {
-          connection 'scm:git:git@github.com:AlexLandau/griddle.git'
-          developerConnection 'scm:git:git@github.com:AlexLandau/griddle.git'
-          url 'git@github.com:AlexLandau/griddle.git'
+          connection 'scm:git:git@github.com:AlexLandau/gdl-validation.git'
+          developerConnection 'scm:git:git@github.com:AlexLandau/gdl-validation.git'
+          url 'git@github.com:AlexLandau/gdl-validation.git'
         }
 
         licenses {

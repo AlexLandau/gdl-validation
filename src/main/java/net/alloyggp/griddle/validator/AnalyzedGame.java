@@ -71,6 +71,9 @@ public class AnalyzedGame {
     private static Set<String> getNamesMatchingOrDownstreamOf(String target,
             Map<String, Set<String>> ancestorGraph) {
         Set<String> results = new HashSet<String>();
+        //Always add target, for cases like "true" or "does" that are not
+        //made true by sentences or rules within the GDL. (See GitHub issue #18)
+        results.add(target);
         for (String name : ancestorGraph.keySet()) {
             if (name.equalsIgnoreCase(target)) {
                 results.add(name);

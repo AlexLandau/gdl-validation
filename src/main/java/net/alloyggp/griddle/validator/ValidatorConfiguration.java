@@ -11,6 +11,7 @@ import net.alloyggp.griddle.validator.check.ContainsUnusualCharacterCheck;
 import net.alloyggp.griddle.validator.check.DatalogKeywordsNotConstantsCheck;
 import net.alloyggp.griddle.validator.check.DisjunctionNotNestedCheck;
 import net.alloyggp.griddle.validator.check.EmptyBodyCheck;
+import net.alloyggp.griddle.validator.check.EmptyDisjunctionCheck;
 import net.alloyggp.griddle.validator.check.ErrorStringCheck;
 import net.alloyggp.griddle.validator.check.FixedArityCheck;
 import net.alloyggp.griddle.validator.check.InconsistentCapitalizationCheck;
@@ -29,6 +30,7 @@ import net.alloyggp.griddle.validator.check.TerminalLegalGoalAreNotActionDepende
 import net.alloyggp.griddle.validator.check.TrueDoesAreNotStandaloneSentencesCheck;
 import net.alloyggp.griddle.validator.check.UnproducedSentenceNamesCheck;
 import net.alloyggp.griddle.validator.check.UnusedSentenceNamesCheck;
+import net.alloyggp.griddle.validator.check.VariablesOnlyInRulesCheck;
 
 public class ValidatorConfiguration {
     private final Map<Check, Level> checks;
@@ -46,6 +48,7 @@ public class ValidatorConfiguration {
         checks.put(DisjunctionNotNestedCheck.INSTANCE, Level.WARNING);
         checks.put(ErrorStringCheck.INSTANCE, Level.ERROR);
         checks.put(EmptyBodyCheck.INSTANCE, Level.WARNING);
+        checks.put(EmptyDisjunctionCheck.INSTANCE, Level.WARNING);
         checks.put(FixedArityCheck.INSTANCE, Level.WARNING);
         checks.put(InconsistentCapitalizationCheck.INSTANCE, Level.ERROR);
         checks.put(InitBaseInputAreConstantCheck.INSTANCE, Level.ERROR);
@@ -63,6 +66,7 @@ public class ValidatorConfiguration {
         checks.put(TrueDoesAreNotStandaloneSentencesCheck.INSTANCE, Level.ERROR);
         checks.put(UnproducedSentenceNamesCheck.INSTANCE, Level.WARNING);
         checks.put(UnusedSentenceNamesCheck.INSTANCE, Level.WARNING);
+        checks.put(VariablesOnlyInRulesCheck.INSTANCE, Level.ERROR);
 
         return new ValidatorConfiguration(checks);
     }

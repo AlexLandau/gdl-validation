@@ -5,6 +5,7 @@ import java.util.Set;
 
 import net.alloyggp.griddle.validator.AnalyzedGame;
 import net.alloyggp.griddle.validator.ParenthesesValidator;
+import net.alloyggp.griddle.validator.Validators;
 import net.alloyggp.griddle.validator.check.Check;
 import net.alloyggp.griddle.validator.check.DatalogKeywordsNotConstantsCheck;
 import net.alloyggp.griddle.validator.check.ErrorStringCheck;
@@ -115,6 +116,36 @@ public class ValidatorTest extends Assert {
         assertTrue(problem.isError());
         assertEquals(6, problem.getPosition().getStart());
         assertEquals(9, problem.getPosition().getEnd());
+    }
+
+    @Test
+    public void testVariableInTopLevelSentence() throws Exception {
+        String gameString = TestGames.getGameString("varInTopLevelSentence");
+        Set<GdlProblem> problems = Validators.getStandardValidator().findProblems(gameString);
+        assertEquals(1, problems.size());
+        GdlProblem problem = problems.iterator().next();
+        assertEquals(10, problem.getPosition().getStart());
+        assertEquals(15, problem.getPosition().getEnd());
+    }
+
+    @Test
+    public void testEmptyDisjunction() throws Exception {
+        String gameString = TestGames.getGameString("emptyDisjunction");
+        Set<GdlProblem> problems = Validators.getStandardValidator().findProblems(gameString);
+        assertEquals(1, problems.size());
+        GdlProblem problem = problems.iterator().next();
+        assertEquals(31, problem.getPosition().getStart());
+        assertEquals(36, problem.getPosition().getEnd());
+    }
+
+    @Test
+    public void testBaseDependingOnTrue() throws Exception {
+        String gameString = TestGames.getGameString("baseDependsOnTrue");
+        Set<GdlProblem> problems = Validators.getStandardValidator().findProblems(gameString);
+        assertEquals(1, problems.size());
+        GdlProblem problem = problems.iterator().next();
+        assertEquals(15, problem.getPosition().getStart());
+        assertEquals(25, problem.getPosition().getEnd());
     }
 
     private Set<GdlProblem> findProblems(Check check, String gameString) throws Exception {

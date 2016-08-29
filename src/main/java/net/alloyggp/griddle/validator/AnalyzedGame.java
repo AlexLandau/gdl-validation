@@ -21,6 +21,11 @@ public class AnalyzedGame {
     private final List<TopLevelGdl> topLevelGdl;
     private final List<Rule> rules; //Just the rules from the top-level GDL
     /**
+     * If the 'gdl' keyword is used, this contains the arguments to that keyword.
+     * All strings stored are lowercase.
+     */
+    private final Set<String> gdlVariants; //Which variants are set with the 'gdl' keyword
+    /**
      * Each name that is a key depends on each name that is in its associated set.
      * This includes indirect relations through multiple rules.
      */
@@ -30,11 +35,13 @@ public class AnalyzedGame {
 
     private AnalyzedGame(List<TopLevelGdl> rules,
             Map<String, Set<String>> sentenceNameAncestorGraph,
+            Set<String> gdlVariants,
             Set<String> stateDependentNames,
             Set<String> actionDependentNames) {
         this.topLevelGdl = Collections.unmodifiableList(rules);
         this.rules = collectRules(topLevelGdl);
         this.sentenceNameAncestorGraph = Collections.unmodifiableMap(sentenceNameAncestorGraph);
+        this.gdlVariants = Collections.unmodifiableSet(gdlVariants);
         this.stateDependentNames = Collections.unmodifiableSet(stateDependentNames);
         this.actionDependentNames = Collections.unmodifiableSet(actionDependentNames);
     }
@@ -59,13 +66,30 @@ public class AnalyzedGame {
         Map<String, Set<String>> sentenceNameDependencyGraph = generateSentenceNameDependencyGraph(rules);
         Map<String, Set<String>> sentenceNameAncestorGraph = toAncestorGraph(sentenceNameDependencyGraph);
 
+        Set<String> gdlVariants = pickOutGdlVariants(rules);
         Set<String> stateDependentNames = getNamesMatchingOrDownstreamOf("true", sentenceNameAncestorGraph);
         Set<String> actionDependentNames = getNamesMatchingOrDownstreamOf("does", sentenceNameAncestorGraph);
 
         return new AnalyzedGame(rules,
                 sentenceNameAncestorGraph,
+                gdlVariants,
                 stateDependentNames,
                 actionDependentNames);
+    }
+
+    private static Set<String> pickOutGdlVariants(List<TopLevelGdl> rules) {
+        Set<String> variants = new HashSet<String>();
+        for (TopLevelGdl gdl : rules) {
+            if (gdl.isSentence()) {
+                Sentence sentence = gdl.getSentence();
+                if (sentence.getName().equalsIgnoreCase("gdl")
+                        && sentence.getBody().size() == 1) {
+                    String variantName = sentence.getBody().get(0).toString();
+                    variants.add(variantName.toLowerCase());
+                }
+            }
+        }
+        return variants;
     }
 
     private static Set<String> getNamesMatchingOrDownstreamOf(String target,
@@ -156,6 +180,14 @@ public class AnalyzedGame {
         } else {
             return Collections.unmodifiableSet(result);
         }
+    }
+
+    /**
+     * If the 'gdl' keyword is used, this contains the arguments to that keyword.
+     * All strings stored are lowercase.
+     */
+    public Set<String> getGdlVariants() {
+        return gdlVariants;
     }
 
     public boolean isStateDependent(String sentenceName) {

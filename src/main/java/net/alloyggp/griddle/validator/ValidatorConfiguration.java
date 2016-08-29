@@ -31,6 +31,10 @@ import net.alloyggp.griddle.validator.check.TrueDoesAreNotStandaloneSentencesChe
 import net.alloyggp.griddle.validator.check.UnproducedSentenceNamesCheck;
 import net.alloyggp.griddle.validator.check.UnusedSentenceNamesCheck;
 import net.alloyggp.griddle.validator.check.VariablesOnlyInRulesCheck;
+import net.alloyggp.griddle.validator.check.variant.GdlArityCheck;
+import net.alloyggp.griddle.validator.check.variant.GdlNotInRuleHeadCheck;
+import net.alloyggp.griddle.validator.check.variant.UnrecognizedGdlArgumentCheck;
+import net.alloyggp.griddle.validator.check.variant.random.GdlRandomGoalCheck;
 
 public class ValidatorConfiguration {
     private final Map<Check, Level> checks;
@@ -40,6 +44,29 @@ public class ValidatorConfiguration {
     }
 
     public static ValidatorConfiguration createStandard() {
+        Map<Check, Level> checks = getStandardChecks();
+
+        return new ValidatorConfiguration(checks);
+    }
+
+    /**
+     * This validator includes support for the experimental GDL keyword and associated
+     * GDL variants.
+     */
+    public static ValidatorConfiguration createExperimental() {
+        Map<Check, Level> checks = getStandardChecks();
+
+        checks.put(GdlArityCheck.INSTANCE, Level.ERROR);
+        checks.put(GdlNotInRuleHeadCheck.INSTANCE, Level.ERROR);
+        checks.put(UnrecognizedGdlArgumentCheck.INSTANCE, Level.WARNING);
+
+        // (gdl random)
+        checks.put(GdlRandomGoalCheck.INSTANCE, Level.ERROR);
+
+        return new ValidatorConfiguration(checks);
+    }
+
+    private static Map<Check, Level> getStandardChecks() {
         Map<Check, Level> checks = new HashMap<Check, Level>();
 
         checks.put(ContainsRoleTerminalGoalLegalCheck.INSTANCE, Level.ERROR);
@@ -67,8 +94,7 @@ public class ValidatorConfiguration {
         checks.put(UnproducedSentenceNamesCheck.INSTANCE, Level.WARNING);
         checks.put(UnusedSentenceNamesCheck.INSTANCE, Level.WARNING);
         checks.put(VariablesOnlyInRulesCheck.INSTANCE, Level.ERROR);
-
-        return new ValidatorConfiguration(checks);
+        return checks;
     }
 
     public Map<Check, Level> getChecks() {

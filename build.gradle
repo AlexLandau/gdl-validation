@@ -16,10 +16,5 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
-// This was used to generate the Gradle wrapper.
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.5'
-}
-
 // This only needs to be uncommented when publishing to Maven.
 //apply from: 'publish.gradle'
